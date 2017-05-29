@@ -52,7 +52,6 @@ public class Ruta {
 
     public void afegir_passatger(Treballador w) {
         passatgers.add(w);
-        w.assignat = true;
         millor = null;
     }
 
@@ -61,7 +60,6 @@ public class Ruta {
             Treballador o = iterator.next();
             if (o.equals(t)) {
                 iterator.remove();
-                t.assignat = false;
                 millor = null;
                 return;
             }
