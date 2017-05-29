@@ -15,12 +15,9 @@ import java.util.Properties;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-
         //HillClimbingSearch();
         SimulatedAnnealingSearch();
-
     }
-    static double ddd = 0;
 
     private static void HillClimbingSearch() {
         Ciutat ciutat = new Ciutat(10);
@@ -32,26 +29,11 @@ public class Main {
                     , new Accions()
                     , new Resultat()
                     , new Objectiu()
-                    , new StepCostFunction() {
-                @Override
-                public double c(Object state, Action action, Object o1) {
-
-/*
-                    Ciutat board = (Ciutat) state;
-                    return board.getDistanciaEstimadaTotal();
-*/
-                    return  ((CiutatAction)action).getTreballador().getDistanciaFeina();
-
-                }
-            });
-            HillClimbingSearch search = new HillClimbingSearch(new HeuristicFunction() {
-                @Override
-                public double h(Object state) {
-/**/
-                    Ciutat board = (Ciutat) state;
-                    return board.getDistanciaEstimadaTotal();
-                }
-            });
+                    , new Cost()
+            );
+            HillClimbingSearch search = new HillClimbingSearch(
+                    new Heuristica()
+                    );
             SearchAgent agent = new SearchAgent(problem, search);
 
             System.out.println();
@@ -76,34 +58,23 @@ public class Main {
 
 
     private static void SimulatedAnnealingSearch() {
-        Ciutat ciutat = new Ciutat(10);
-        ciutat.omplir(20);
+        Ciutat ciutat = new Ciutat(20);
+        ciutat.omplir(80);
+
+        System.out.print(ciutat.treballadors);
 
         System.out.println("\nSmartCity Simulated Annealing Search  -->");
         try {
             Problem problem = new Problem(ciutat
                     , new Accions()
                     , new Resultat()
-                    , new Objectiu(), new StepCostFunction() {
-                @Override
-                public double c(Object state, Action action, Object o1) {
-
-/*
-                    Ciutat board = (Ciutat) state;
-                    return board.getDistanciaEstimadaTotal();
-*/
-                    return  ((CiutatAction)action).getTreballador().getDistanciaFeina();
-
-                }
-            });
-            SimulatedAnnealingSearch search = new SimulatedAnnealingSearch(new HeuristicFunction() {
-                @Override
-                public double h(Object state) {
-                    Ciutat board = (Ciutat) state;
-                    return board.getDistanciaEstimadaTotal();
-                }
-            },
-                    new Scheduler(2, 0.045, 50));
+                    , new Objectiu()
+                    , new Cost()
+            );
+            SimulatedAnnealingSearch search = new SimulatedAnnealingSearch(
+                    new Heuristica(),
+                    new Scheduler(2, 0.045, 20)
+            );
             SearchAgent agent = new SearchAgent(problem, search);
 
             System.out.println();
@@ -116,6 +87,7 @@ public class Main {
 
             System.out.print(  ciutat.getBoardPic());
             System.out.print(  ciutat.getRutesPic());
+            System.out.print(  ciutat.getRutesText());
 
         } catch (Exception e) {
             e.printStackTrace();

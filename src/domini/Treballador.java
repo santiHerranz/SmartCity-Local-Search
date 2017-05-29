@@ -36,7 +36,7 @@ public class Treballador {
 
     @Override
     public String toString() {
-        return String.format("%s %s (%.1f km)", nom, rol, getDistanciaFeina() );
+        return String.format("%s (%.1f km)", nom, getDistanciaFeina() );
     }
 
 }

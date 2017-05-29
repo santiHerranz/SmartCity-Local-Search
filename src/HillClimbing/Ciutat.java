@@ -17,12 +17,13 @@ import java.util.Random;
 public class Ciutat {
 
 
-	public static final double MIN_DISTANCIA = 2;
+	public static final double MIN_DISTANCIA = 5;
 	public static final double MAX_DISTANCE = 30;
 	public static final int MAX_PASSATGERS = 2;
-	public static final int MAX_PASSATGERS_PER_RUTA = 4;
+	public static final int MAX_PASSATGERS_PER_RUTA = 10;
 
 	int size;
+	public List<Treballador> conductors = new ArrayList<>();
 	public List<Treballador> treballadors = new ArrayList<>();
 	Treballador[][] rutes;
 
@@ -37,6 +38,11 @@ public class Ciutat {
 		}
 	}
 
+	public int getSize() {
+		return size;
+	}
+
+
 	public void clear() {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
@@ -46,24 +52,15 @@ public class Ciutat {
 		treballadors = new ArrayList<>();
 	}
 
-	public void copiarCiutat(Ciutat ciutat) {
-		//clear();
+	public void setRutes(Ciutat ciutat) {
+		clear();
 		this.treballadors = ciutat.treballadors; //new ArrayList<>(ciutat.treballadors); //
+		this.conductors = ciutat.conductors;
 		this.rutes = ciutat.rutes;
 
-/*
-		for (int i = 0; i < ciutat.getRutesPassatgers().size(); i++) {
-			XYLocation pos = ciutat.getRutesPassatgers().get(i);
-			Treballador t = ciutat.getPassatger(pos.getXCoOrdinate(), pos.getYCoOrdinate());
-			this.assignar_ruta(pos, t);
-		}
-*/
 	}
 
 
-	public int getSize() {
-		return size;
-	}
 
 
 
@@ -77,7 +74,9 @@ public class Ciutat {
 		Posicio home = null;
 		Posicio work = null;
 
-		while (treballadors.size() < workerNumber) {
+		int counter = 1;
+
+		while (conductors.size() < workerNumber/2) {
 			try {
 				home = Posicio.novaPosicio();
 				work = Posicio.novaPosicio();
@@ -85,9 +84,27 @@ public class Ciutat {
 
 			double dist = Ciutat.calcular_distancia(home, work);
 
-			if (dist > Ciutat.MIN_DISTANCIA && dist <= Ciutat.MAX_DISTANCE/5) {
-				Treballador t = new Treballador(String.format("%02d",  treballadors.size()+1), home, work);
+			if (dist > Ciutat.MAX_DISTANCE/2 && dist <= Ciutat.MAX_DISTANCE) {
+				Treballador t = new Treballador(String.format("C%02d",  counter++), home, work);
+				t.rol = Rol.CONDUCTOR;
+				conductors.add(t);
+			}
+
+		}
+
+
+		while (treballadors.size() < workerNumber/2) {
+			try {
+				home = Posicio.novaPosicio();
+				work = Posicio.novaPosicio();
+			} catch (Exception e) {}
+
+			double dist = Ciutat.calcular_distancia(home, work);
+
+			if (dist > Ciutat.MIN_DISTANCIA && dist <= Ciutat.MAX_DISTANCE) {
+				Treballador t = new Treballador(String.format("P%02d",  counter++), home, work);
 				treballadors.add(t);
+				t.rol = Rol.PASSATGER;
 /*				if(drivers<workerNumber/2) {
 					t.rol = Rol.CONDUCTOR;
 					drivers++;
@@ -98,20 +115,9 @@ public class Ciutat {
 
 		}
 
+
+
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-	/** Column and row indices start with 0! */
 
 	public void assignar_ruta(XYLocation l, Treballador t) {
 
@@ -133,14 +139,7 @@ public class Ciutat {
 		}
 	}
 
-	/**
-	 * Moves the queen in the specified column (x-value of <code>l</code>) to
-	 * the specified row (y-value of <code>l</code>). The action assumes a
-	 * complete-state formulation of the n-queens problem.
-	 * 
-	 * @param l
-	 */
-	public void moveQueenTo(XYLocation l) {
+	public void intercanvi_ruta(XYLocation l) {
 		for (int i = 0; i < size; i++)
 			rutes[l.getXCoOrdinate()][i] = null; // TODO
 		rutes[l.getXCoOrdinate()][l.getYCoOrdinate()] = null;// TODO
@@ -158,9 +157,39 @@ public class Ciutat {
 		return (hiHaPassatger(l.getXCoOrdinate(), l.getYCoOrdinate()));
 	}
 
-	protected boolean hiHaPassatger(int x, int y) {
+	private boolean hiHaPassatger(int x, int y) {
 		return (rutes[x][y] != null);
 	}
+
+	public  Treballador getPassatger(XYLocation l) {
+		return rutes[l.getXCoOrdinate()][l.getYCoOrdinate()];
+	}
+
+	protected Treballador getPassatger(int x, int y) {
+		return rutes[x][y];
+	}
+
+
+	public Ruta getRuta(int row) {
+
+		Ruta ruta = new Ruta();
+		try {
+			ruta.afegir_conductor(conductors.get(row));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		for (int i = 0; i < this.size ; i++) {
+			Treballador p = this.getPassatger(i,row);
+			if (p != null) {
+				ruta.afegir_passatger(p);
+			}
+		}
+		ruta.getMillor();
+
+		return ruta;
+	}
+
 
 	public int getNumeroPassatgerAssignats() {
 		int count = 0;
@@ -190,7 +219,7 @@ public class Ciutat {
 		double result = 0;
 		for (Treballador t: treballadors ) {
 			if (t.assignat)
-				result += MAX_DISTANCE - 1; //Ciutat.calcular_distancia(t.getCasa(),t.getFeina());
+				result += MAX_DISTANCE - Ciutat.calcular_distancia(t.getCasa(),t.getFeina());
 			else
 				result += MAX_DISTANCE;
 		}
@@ -198,34 +227,16 @@ public class Ciutat {
 	}
 
 
-	public boolean pucAssignarPassatger(Treballador t, XYLocation l) {
+	public boolean pucAssignarPassatger(Treballador t, Ruta ruta) {
 
-		int x = l.getXCoOrdinate();
-		int y = l.getYCoOrdinate();
+		if ( ruta.passatgers.size()>=Ciutat.MAX_PASSATGERS_PER_RUTA )
+			return false;
 
-		Ruta ruta = new Ruta();
-		try {
-			ruta.afegir_conductor(new Treballador("C",new Posicio(15,15), new Posicio(15,15)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		for (int i = 0; i < this.size ; i++) {
-			Treballador p = getPassatger(i,y);
-			if (p != null) {
-				ruta.afegir_passatger(p);
-			}
-		}
 		ruta.afegir_passatger(t);
-
 		double distancia = ruta.getMillor().getDistancia();
 
 		return (distancia<=MAX_DISTANCE);
 
-	}
-
-	private Treballador getPassatger(int x, int y) {
-		return rutes[x][y];
 	}
 
 
@@ -279,22 +290,22 @@ public class Ciutat {
 		StringBuffer buffer = new StringBuffer();
 		for (int row = 0; (row < size); row++) { // row
 
-			Ruta ruta = new Ruta();
-			try {
-				ruta.afegir_conductor(new Treballador("C",new Posicio(size*1/3,size*1/3), new Posicio(size*2/3,size*2/3)));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			for (int i = 0; i < this.size ; i++) {
-				Treballador t = getPassatger(i,row);
-				if (t != null) {
-					ruta.afegir_passatger(t);
-				}
-			}
-			ruta.getMillor();
+			Ruta ruta = this.getRuta(row);
 
 			buffer.append(ruta);
+			buffer.append("\n");
+		}
+		return buffer.toString();
+	}
+
+
+	public String getRutesText() {
+		StringBuffer buffer = new StringBuffer();
+		for (int row = 0; (row < size); row++) { // row
+
+			Ruta ruta = this.getRuta(row);
+
+			buffer.append(ruta.Texte());
 			buffer.append("\n");
 		}
 		return buffer.toString();
@@ -351,7 +362,6 @@ public class Ciutat {
 		}
 		return d;
 	}
-
 
 
 }

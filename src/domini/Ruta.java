@@ -99,20 +99,27 @@ public class Ruta {
     @Override
     public String toString() {
         String s = "";
+        if (millor!= null) {
+            s += String.format("%s", millor.passos);
+        }
+        return s;
+    }
+
+
+    public String Texte() {
+        String s = "";
         if ( conductor != null)
-            s += "["+ conductor.toString() +" (";
+            s += "["+ conductor.getNom() +" (";
         for (Treballador p:passatgers ) {
             s += " "+ p.getNom() +" ";
         }
         s += ")";
         if (millor!= null) {
             s += String.format(" Total= %.1f km", Ciutat.calcular_distancia_ruta(millor.passos));
-            s += String.format("\n%s", millor.passos);
         }
 
         return s;
     }
-
 
 
     public boolean puc_agafar_Passatger_a_la_ruta() {
@@ -153,7 +160,7 @@ public class Ruta {
 
             Recorregut recorregut = new Recorregut();
             // Desplaçaments del conductor per calcular la distancia del recorregut
-            recorregut.passos.add(0, new Accio("S", conductor, conductor.getCasa()));
+            recorregut.passos.add(0, new Accio("", conductor, conductor.getCasa()));
             recorregut.passos.add(recorregut.passos.size(), new Accio("E", conductor, conductor.getFeina()));
             millor = recorregut;
 
@@ -163,8 +170,8 @@ public class Ruta {
             for (Recorregut recorregut : obtenirTotsRecorregutsValids(this.passatgers)) {
 
                 // afegim els desplaçaments del conductor per calcular la distancia final del recorregut
-                recorregut.passos.add(0, new Accio("S", conductor, conductor.getCasa()));
-                recorregut.passos.add(recorregut.passos.size(), new Accio("E", conductor, conductor.getFeina()));
+                recorregut.passos.add(0, new Accio("", conductor, conductor.getCasa()));
+                recorregut.passos.add(recorregut.passos.size(), new Accio("", conductor, conductor.getFeina()));
 
                 // calculem la distancia completa
                 double distancia =  recorregut.getDistancia();
@@ -182,7 +189,8 @@ public class Ruta {
     private List<Recorregut> obtenirTotsRecorregutsValids(List<Treballador> passatgers) {
         List<Recorregut> result = new ArrayList<Recorregut>();
 
-        List<List<Accio>> combinacions = getCombinacioAccionsPermutant(passatgers);
+//        List<List<Accio>> combinacions = getCombinacioAccionsPermutant(passatgers);
+        List<List<Accio>> combinacions = getCombinacioAccionsBackTracking(passatgers);
 
         for (List<Accio> accions : combinacions) {
             Recorregut recorregut = new Recorregut(accions);
