@@ -1,8 +1,7 @@
 package HillClimbing;
 
 import aima.core.util.datastructure.XYLocation;
-import domini.Posicio;
-import domini.Treballador;
+import domini.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.Random;
 public class Ciutat {
 
 
-	public static final double MIN_DISTANCIA = 1;
+	public static final double MIN_DISTANCIA = 5;
 	public static final double MAX_DISTANCE = 30;
 	public static final int MAX_PASSATGERS = 2;
 	public static final int MAX_PASSATGERS_PER_RUTA = 4;
@@ -87,7 +86,7 @@ public class Ciutat {
 	 * row indices start with 0.
 	 */
 	public Ciutat(int size) {
-		omplir(size);
+		omplir(size*size);
 		this.size = size;
 		rutes = new Treballador[size][size];
 		for (int i = 0; i < size; i++) {
@@ -109,11 +108,11 @@ public class Ciutat {
 		this(size);
 		if (config == Config.QUEENS_IN_FIRST_ROW) {
 			for (int i = 0; i < size; i++)
-				afegir_passatgerARuta(new XYLocation(i, 0));
+				assignar_ruta(new XYLocation(i, 0));
 		} else if (config == Config.QUEEN_IN_EVERY_COL) {
 			Random r = new Random();
 			for (int i = 0; i < size; i++)
-				afegir_passatgerARuta(new XYLocation(i, r.nextInt(size)));
+				assignar_ruta(new XYLocation(i, r.nextInt(size)));
 		}
 	}
 
@@ -123,29 +122,53 @@ public class Ciutat {
 				rutes[i][j] = null;// TODO
 			}
 		}
+		treballadors = new ArrayList<>();
 	}
 
-	public void setBoard(List<XYLocation> al) {
+	public void copiarCiutat(Ciutat ciutat) {
 		clear();
-		for (int i = 0; i < al.size(); i++) {
-			afegir_passatgerARuta(al.get(i));
+		treballadors = ciutat.treballadors; //new ArrayList<>(ciutat.treballadors);
+		for (int i = 0; i < ciutat.getRutesPassatgers().size(); i++) {
+			XYLocation pos = ciutat.getRutesPassatgers().get(i);
+			Treballador t = ciutat.getPassatger(pos.getXCoOrdinate(), pos.getYCoOrdinate());
+			assignar_ruta(pos, t);
 		}
 	}
+
 
 	public int getSize() {
 		return size;
 	}
 
 	/** Column and row indices start with 0! */
-	public void afegir_passatgerARuta(XYLocation l) {
-		Treballador t = treballadors.get(0);
-		if (!(hiHaPassatger(l))) {
-			rutes[l.getXCoOrdinate()][l.getYCoOrdinate()] = t ;
-			t.assignat=true;
+	public void assignar_ruta(XYLocation l) {
+
+		Treballador t = treballadors
+				.stream()
+				.filter(a -> a.assignat==false)
+				.findFirst().orElse(null);
+
+		if (t != null) {
+			if (!(hiHaPassatger(l))) {
+				rutes[l.getXCoOrdinate()][l.getYCoOrdinate()] = t ;
+				t.assignat=true;
+			}
 		}
 	}
 
-	public void removeQueenFrom(XYLocation l) {
+	public void assignar_ruta(XYLocation l, Treballador t) {
+
+		if (t != null) {
+			if (!(hiHaPassatger(l))) {
+				rutes[l.getXCoOrdinate()][l.getYCoOrdinate()] = t ;
+				t.assignat=true;
+			}
+		}
+	}
+
+
+
+	public void desassignar_ruta(XYLocation l) {
 		if (rutes[l.getXCoOrdinate()][l.getYCoOrdinate()] != null) {
 			Treballador t = rutes[l.getXCoOrdinate()][l.getYCoOrdinate()];
 			rutes[l.getXCoOrdinate()][l.getYCoOrdinate()]= null;
@@ -168,8 +191,8 @@ public class Ciutat {
 
 	public void moveQueen(XYLocation from, XYLocation to) {
 		if ((hiHaPassatger(from)) && (!(hiHaPassatger(to)))) {
-			removeQueenFrom(from);
-			afegir_passatgerARuta(to);
+			desassignar_ruta(from);
+			assignar_ruta(to);
 		}
 	}
 
@@ -177,7 +200,7 @@ public class Ciutat {
 		return (hiHaPassatger(l.getXCoOrdinate(), l.getYCoOrdinate()));
 	}
 
-	private boolean hiHaPassatger(int x, int y) {
+	protected boolean hiHaPassatger(int x, int y) {
 		return (rutes[x][y] != null);
 	}
 
@@ -208,7 +231,7 @@ public class Ciutat {
 		double result = 0;
 		for (Treballador t: treballadors ) {
 			if (t.assignat==true)
-				result += MAX_DISTANCE - 10;//Ciutat.calcular_distancia(t.getCasa(),t.getFeina());
+				result += MAX_DISTANCE - 1; //Ciutat.calcular_distancia(t.getCasa(),t.getFeina());
 			else
 				result += MAX_DISTANCE;
 		}
@@ -216,13 +239,32 @@ public class Ciutat {
 	}
 
 
-	public boolean pucPossarPassatger(XYLocation l) {
+	public boolean pucAssignarPassatger(XYLocation l) {
+
 		int x = l.getXCoOrdinate();
 		int y = l.getYCoOrdinate();
-		return (true);
-		//teConductorAssignat(x, y)
-		//|| isSquareVerticallyAttacked(x, y)
-		//|| isSquareDiagonallyAttacked(x, y)
+
+		Ruta ruta = new Ruta();
+		try {
+			ruta.afegir_conductor(new Treballador("C",new Posicio(size*1/3,size*1/3), new Posicio(size*2/3,size*2/3)));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		for (int i = 0; i < this.size ; i++) {
+			Treballador t = getPassatger(i,y);
+			if (t != null) {
+				ruta.afegir_passatger(t);
+			}
+		}
+
+		double distancia = ruta.getMillor().getDistancia();
+		return (distancia<=MAX_DISTANCE);
+
+	}
+
+	private Treballador getPassatger(int x, int y) {
+		return rutes[x][y];
 	}
 
 
@@ -271,6 +313,35 @@ public class Ciutat {
 		return buffer.toString();
 	}
 
+
+	public String getRutesPic() {
+		StringBuffer buffer = new StringBuffer();
+		for (int row = 0; (row < size); row++) { // row
+
+			Ruta ruta = new Ruta();
+			try {
+				ruta.afegir_conductor(new Treballador("C",new Posicio(size*1/3,size*1/3), new Posicio(size*2/3,size*2/3)));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			for (int i = 0; i < this.size ; i++) {
+				Treballador t = getPassatger(i,row);
+				if (t != null) {
+					ruta.afegir_passatger(t);
+				}
+			}
+			ruta.getMillor();
+
+			buffer.append(ruta);
+			buffer.append("\n");
+		}
+		return buffer.toString();
+	}
+
+
+
+
 	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
@@ -285,4 +356,29 @@ public class Ciutat {
 		}
 		return buf.toString();
 	}
+
+
+	public static double calcula_distancia(List<Accio> recorregut) {
+		double d = 0.0;
+		Posicio p1 = recorregut.get(0).lloc;
+		for (Accio p: recorregut ) {
+			d += calcular_distancia(p1, p.lloc);
+			p1 = p.lloc;
+		}
+		return d;
+	}
+
+
+	public static double calcular_distancia_ruta(List<Accio> passos) {
+		double d = 0.0;
+		Accio p1 = passos.get(0);
+		for (Accio p: passos ) {
+			d += Ciutat.calcular_distancia(p1.lloc, p.lloc);
+			p1 = p;
+		}
+		return d;
+	}
+
+
+
 }

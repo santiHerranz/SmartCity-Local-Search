@@ -17,14 +17,31 @@ public class Accions implements ActionsFunction {
 
             Set<Action> actions = new LinkedHashSet<Action>();
 
-            int numeroPassatgerAssignats = ciutat.getNumeroPassatgerAssignats();
             int boardSize = ciutat.getSize();
-            for (int i = 0; i < boardSize; i++) {
-                XYLocation newLocation = new XYLocation(numeroPassatgerAssignats, i);
-                if ((ciutat.pucPossarPassatger(newLocation))) {
-                    actions.add(new CiutatAction(CiutatAction.ASSIGNAR_PASSATGER, newLocation));
+
+            for (int row = 0; row < boardSize; row++) {
+                int seientLliure = 0;
+                    for (int col = 0; col < boardSize; col++) {
+                         if (!ciutat.hiHaPassatger(col, row))
+                             break;
+                        seientLliure++;
+                    }
+
+                    XYLocation novaPossicio = new XYLocation( seientLliure, row);
+
+                    if ((ciutat.pucAssignarPassatger(novaPossicio))) {
+                        actions.add(new CiutatAction(CiutatAction.ASSIGNAR_PASSATGER, novaPossicio));
+                    }
+            }
+
+        for (int row = 0; row < boardSize; row++) {
+            for (int col = 0; col < boardSize; col++) {
+                XYLocation possicioTreballador = new XYLocation(col, row);
+                if ((ciutat.hiHaPassatger(possicioTreballador))) {
+                    actions.add(new CiutatAction(CiutatAction.DESASSIGNAR_PASSATGER, possicioTreballador));
                 }
             }
+        }
 
             return actions;
         }

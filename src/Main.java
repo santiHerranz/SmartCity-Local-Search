@@ -1,17 +1,14 @@
-import HillClimbing.*;
+import HillClimbing.Accions;
+import HillClimbing.Ciutat;
+import HillClimbing.Objectiu;
+import HillClimbing.Resultat;
 import aima.core.agent.Action;
-import aima.core.environment.nqueens.NQueensBoard;
-import aima.core.environment.nqueens.NQueensFunctionFactory;
-import aima.core.environment.nqueens.NQueensGoalTest;
 import aima.core.search.framework.SearchAgent;
-import aima.core.search.framework.SearchForActions;
 import aima.core.search.framework.evalfunc.HeuristicFunction;
 import aima.core.search.framework.problem.Problem;
-import aima.core.search.framework.qsearch.TreeSearch;
 import aima.core.search.local.HillClimbingSearch;
 import aima.core.search.local.Scheduler;
 import aima.core.search.local.SimulatedAnnealingSearch;
-import aima.core.search.uninformed.BreadthFirstSearch;
 
 import java.util.Iterator;
 import java.util.List;
@@ -21,9 +18,8 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        //BreadthFirstSearch();
-        HillClimbingSearch();
-        //SimulatedAnnealingSearch();
+        //HillClimbingSearch();
+        SimulatedAnnealingSearch();
 
     }
 
@@ -52,38 +48,23 @@ public class Main {
             System.out.println("Final State=\n" + search.getLastSearchState());
             printInstrumentation(agent.getInstrumentation());
 
+            ciutat = (Ciutat)search.getLastSearchState();
+
             System.out.print(  ciutat.getBoardPic());
+            System.out.print(  ciutat.getRutesPic());
+
+
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void BreadthFirstSearch() {
-        Ciutat ciutat = new Ciutat(5);
-        try {
-            System.out.println("\nSmartCity BFS -->");
-            Problem problem = new Problem(ciutat
-                    , new Accions()
-                    , new Resultat()
-                    , new Objectiu());
-            SearchForActions search = new BreadthFirstSearch(new TreeSearch());
-            SearchAgent agent = new SearchAgent(problem, search);
 
-            System.out.println();
-            printActions(agent.getActions());
-            printInstrumentation(agent.getInstrumentation());
-
-            System.out.print(  ciutat.getBoardPic());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
 
     private static void SimulatedAnnealingSearch() {
-        Ciutat ciutat = new Ciutat(20);
+        Ciutat ciutat = new Ciutat(10);
 
         System.out.println("\nSmartCity Simulated Annealing Search  -->");
         try {
@@ -98,7 +79,7 @@ public class Main {
                     return board.getDistanciaEstimadaTotal();
                 }
             },
-                    new Scheduler(2, 0.045, 20));
+                    new Scheduler(2, 0.045, 30));
             SearchAgent agent = new SearchAgent(problem, search);
 
             System.out.println();
@@ -106,10 +87,18 @@ public class Main {
             System.out.println("Search Outcome=" + search.getOutcome());
             System.out.println("Final State=\n" + search.getLastSearchState());
             printInstrumentation(agent.getInstrumentation());
+
+            ciutat = (Ciutat)search.getLastSearchState();
+
+            System.out.print(  ciutat.getBoardPic());
+            System.out.print(  ciutat.getRutesPic());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
 
 
 

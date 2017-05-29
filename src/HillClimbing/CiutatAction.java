@@ -5,9 +5,9 @@ import aima.core.util.datastructure.XYLocation;
 
 
 public class CiutatAction extends DynamicAction {
-    public static final String ASSIGNAR_PASSATGER = "ASSIGNAR_PASSATGER";
-    public static final String DESASSIGNAR_PASSATGER = "DESASSIGNAR_PASSATGER";
-    public static final String MOURE_PASSATGER = "MOURE_PASSATGER";
+    public static final String ASSIGNAR_PASSATGER = "ASSIGNAR";
+    public static final String DESASSIGNAR_PASSATGER = "DESASSIGNAR";
+    public static final String MOURE_PASSATGER = "MOURE";
 
     public static final String ATTRIBUTE_QUEEN_LOC = "location";
 

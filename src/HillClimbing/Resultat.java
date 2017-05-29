@@ -13,16 +13,18 @@ public class Resultat implements ResultFunction {
         public Object result(Object s, Action a) {
             if (a instanceof CiutatAction) {
                 CiutatAction qa = (CiutatAction) a;
-                Ciutat board = (Ciutat) s;
-                Ciutat newBoard = new Ciutat(board.getSize());
-                newBoard.setBoard(board.getRutesPassatgers());
+                Ciutat ciutat = (Ciutat) s;
+                Ciutat newCiutat = new Ciutat(ciutat.getSize());
+
+                newCiutat.copiarCiutat(ciutat);
+
                 if (Objects.equals(qa.getName(), CiutatAction.ASSIGNAR_PASSATGER))
-                    newBoard.afegir_passatgerARuta(qa.getLocation());
+                    newCiutat.assignar_ruta(qa.getLocation());
                 else if (Objects.equals(qa.getName(), CiutatAction.DESASSIGNAR_PASSATGER))
-                    newBoard.removeQueenFrom(qa.getLocation());
+                    newCiutat.desassignar_ruta(qa.getLocation());
                 else if (Objects.equals(qa.getName(), CiutatAction.MOURE_PASSATGER))
-                    newBoard.moveQueenTo(qa.getLocation());
-                s = newBoard;
+                    newCiutat.moveQueenTo(qa.getLocation());
+                s = newCiutat;
             }
             // if action is not understood or is a NoOp
             // the result will be the current state.

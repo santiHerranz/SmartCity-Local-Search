@@ -4,7 +4,7 @@ package domini;
  * Created by santi on 17/05/2017.
  */
 public class Accio {
-    Posicio lloc = null;
+    public Posicio lloc = null;
     public String accio;
     public Treballador treballador;
 

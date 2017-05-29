@@ -3,7 +3,6 @@ package test;
 import HillClimbing.Ciutat;
 import HillClimbing.Objectiu;
 import aima.core.util.datastructure.XYLocation;
-import domini.Treballador;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +31,7 @@ public class CiutatGoalTestTest {
 	public void testSingleSquareBoard() {
 		board = new Ciutat(1);
 		Assert.assertFalse(goalTest.isGoalState(board));
-		board.afegir_passatgerARuta(new XYLocation(0, 0));
+		board.assignar_ruta(new XYLocation(0, 0));
 		Assert.assertTrue(goalTest.isGoalState(board));
 	}
 
@@ -42,7 +41,7 @@ public class CiutatGoalTestTest {
 		Assert.assertFalse(goalTest.isGoalState(board));
 
 		for (int i = 0; i < board.treballadors.size(); i++) {
-			board.afegir_passatgerARuta(new XYLocation(i, i));
+			board.assignar_ruta(new XYLocation(i, i));
 		}
 
 

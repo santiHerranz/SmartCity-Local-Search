@@ -20,13 +20,13 @@ public class CiutatBasicTest {
     @Test
     public void testBasics() {
         Assert.assertEquals(0, ciutat.getNumeroPassatgerAssignats());
-        ciutat.afegir_passatgerARuta(new XYLocation(0, 0));
+        ciutat.assignar_ruta(new XYLocation(0, 0));
         Assert.assertEquals(1, ciutat.getNumeroPassatgerAssignats());
 
-        ciutat.afegir_passatgerARuta(new XYLocation(0, 0));
+        ciutat.assignar_ruta(new XYLocation(0, 0));
         Assert.assertEquals(1, ciutat.getNumeroPassatgerAssignats());
 
-        ciutat.afegir_passatgerARuta(new XYLocation(1, 1));
+        ciutat.assignar_ruta(new XYLocation(1, 1));
         Assert.assertEquals(2, ciutat.getNumeroPassatgerAssignats());
 
         Assert.assertTrue(ciutat.hiHaPassatger(new XYLocation(1, 1)));
