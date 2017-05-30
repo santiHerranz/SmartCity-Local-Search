@@ -3,7 +3,6 @@ package HillClimbing;
 import aima.core.agent.Action;
 import aima.core.search.framework.problem.ActionsFunction;
 import aima.core.util.datastructure.XYLocation;
-import domini.Posicio;
 import domini.Ruta;
 import domini.Treballador;
 
@@ -37,6 +36,7 @@ public class Accions implements ActionsFunction {
 
                 for (int row = 0; row < boardSize; row++) {
                     Ruta ruta = ciutat.getRuta(row);
+
                     if ((ciutat.pucAssignarPassatger(t, ruta))) {
                         int seientLliure = 0;
                         for (int col = 0; col < boardSize; col++) {
@@ -47,6 +47,7 @@ public class Accions implements ActionsFunction {
 
                         XYLocation novaPossicio = new XYLocation( seientLliure, row);
                         actions.add(new CiutatAction(CiutatAction.ASSIGNAR_PASSATGER, t, ruta, novaPossicio));
+
                     }
                 }
             }

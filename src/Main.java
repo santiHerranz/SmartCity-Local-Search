@@ -1,9 +1,7 @@
 import HillClimbing.*;
 import aima.core.agent.Action;
 import aima.core.search.framework.SearchAgent;
-import aima.core.search.framework.evalfunc.HeuristicFunction;
 import aima.core.search.framework.problem.Problem;
-import aima.core.search.framework.problem.StepCostFunction;
 import aima.core.search.local.HillClimbingSearch;
 import aima.core.search.local.Scheduler;
 import aima.core.search.local.SimulatedAnnealingSearch;
