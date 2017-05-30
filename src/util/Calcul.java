@@ -26,4 +26,45 @@ public class Calcul {
         }
         return returnValue;
     }
+
+
+
+    public static List<List<Accio>> permute(List<Accio> accions) {
+        List<List<Accio>> list = new ArrayList<>();
+        backtrack(list, new ArrayList<>(), accions);
+        return list;
+    }
+
+    private static void backtrack(List<List<Accio>> list, List<Accio> tempList, List<Accio> accions){
+        if(tempList.size() == accions.size()){
+            list.add(new ArrayList<>(tempList));
+        } else{
+            for(int i = 0; i < accions.size(); i++){
+                if(tempList.contains(accions.get(i))) continue; // element already exists, skip
+
+                if (!valida(tempList)) continue;
+
+                tempList.add(accions.get(i));
+                backtrack(list, tempList, accions);
+                tempList.remove(tempList.size() - 1);
+            }
+        }
+    }
+
+    private static boolean valida(List<Accio> tempList) {
+
+
+        int onBoard = 0;
+        for (int i = 0; i < tempList.size() ; i++) {
+            Accio a = tempList.get(i);
+            if (a.accio=="T")
+                onBoard++;
+            if (a.accio=="D")
+                onBoard--;
+            if (onBoard<0 || onBoard> 2)
+                return false;
+        }
+        return true;
+    }
+
 }

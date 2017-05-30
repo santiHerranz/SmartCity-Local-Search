@@ -364,4 +364,53 @@ public class Ciutat {
 	}
 
 
+
+
+	public static String mostraDistancies(List<Posicio> moves) {
+		StringBuilder sb = new StringBuilder();
+		StringBuilder sb2 = new StringBuilder();
+		double d = 0.0;
+		Posicio p1 = moves.get(0);
+		sb.append("("+p1.x +","+ p1.y+")");
+		sb2.append("("+p1.x +","+ p1.y+")");
+		for (Posicio p: moves ) {
+			double tram = Ciutat.calcular_distancia(p1, p);
+			d += tram;
+			p1 = p;
+
+			if(tram>0) {
+				sb.append(String.format(" - %2.1f - ", tram ));
+				sb.append("(" + p1.x + "," + p1.y + ")");
+				sb2.append(String.format(" - %2.1f - ", d));
+				sb2.append("(" + p1.x + "," + p1.y + ")");
+			}
+		}
+		return sb.toString() +"\n"+ sb2.toString();
+	}
+
+	public void mapaTreballadors() {
+		System.out.format("Mapa:\n");
+		this.treballadors.stream()
+				.forEach(w -> System.out.format(
+						"%s_%s_%s\t%s\t%s\n"
+						, w.rol
+						, w.getNom()
+						, "CASA"
+						, w.getCasa().x
+						, w.getCasa().y
+				));
+		this.treballadors.stream()
+				.forEach(w -> System.out.format(
+						"%s_%s_%s\t%s\t%s\n"
+						, w.rol
+						, w.getNom()
+						, "FEINA"
+						, w.getFeina().x
+						, w.getFeina().y
+				));
+	}
+
+
+
+
 }

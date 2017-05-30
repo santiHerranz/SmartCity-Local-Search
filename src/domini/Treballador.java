@@ -39,4 +39,8 @@ public class Treballador {
         return String.format("%s (%.1f km)", nom, getDistanciaFeina() );
     }
 
+    public String Describe() {
+        return String.format("%s (%s, %s)->(%s, %s) %.1f km", nom, casa.x,casa.y, feina.x, feina.y, getDistanciaFeina() );
+    }
+
 }

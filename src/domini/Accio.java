@@ -9,6 +9,8 @@ public class Accio {
     public Treballador treballador;
 
 
+
+
     public Accio(String accio, Treballador treballador, Posicio lloc) {
         this.accio = accio;
         this.treballador = treballador;

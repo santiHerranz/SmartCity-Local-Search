@@ -64,4 +64,16 @@ public class Recorregut {
         return Arrays.toString(passos.toArray());
     }
 
+    public String Describe() {
+        return String.format("%s %.1f km", this, getDistancia() );
+    }
+
+    public List<Posicio> getParades() {
+
+        List<Posicio> resultat = new ArrayList<>();
+        for (Accio a: passos ) {
+            resultat.add(new Posicio(a.lloc.x,a.lloc.y));
+        }
+        return resultat;
+    }
 }

@@ -23,9 +23,9 @@ public class Posicio {
             return null;
         }
 
-        public Posicio(int x, int y) throws Exception{
-            if (!valid(x,y))
-                throw new Exception("Error coordenada");
+        public Posicio(int x, int y){ // throws Exception
+/*            if (!valid(x,y))
+                throw new Exception("Error coordenada");*/
             this.x = x; this.y= y;
         }
 
